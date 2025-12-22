@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Menú dinámico con Hero</title>
+
+<style>
+:root {
+    --bg-main: #8b6f4e;
+    --bg-menu: #a88b6a;
+    --bg-hover: #c4a484;
+    --accent: #5a3e2b;
+    --text: #fffaf3;
+}
+
+body {
+    margin: 0;
+    font-family: "Segoe UI", Roboto, Arial, sans-serif;
+    background: linear-gradient(135deg, #f5efe6, #efe6d8);
+}
+
+/* NAV */
+nav {
+    background: linear-gradient(90deg, var(--bg-main), var(--bg-menu));
+    display: flex;
+    padding: 0 20px;
+    box-shadow: 0 6px 20px rgba(90, 62, 43, 0.35);
+}
+
+.menu-item {
+    position: relative;
+    padding: 16px 22px;
+    color: var(--text);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    user-select: none;
+}
+
+.menu-item:hover {
+    background: var(--bg-hover);
+    color: var(--accent);
+}
+
+.menu-item::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 20%;
+    width: 60%;
+    height: 2px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.menu-item:hover::after,
+.menu-item.active::after {
+    transform: scaleX(1);
+}
+
+/* SUBMENU */
+.submenu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    min-width: 220px;
+    background: linear-gradient(180deg, var(--bg-menu), var(--bg-main));
+    border-radius: 12px;
+    overflow: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(10px);
+    transition: 0.3s ease;
+}
+
+.menu-item.active .submenu {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+
+.submenu a {
+    display: block;
+    padding: 14px 18px;
+    color: var(--text);
+    text-decoration: none;
+}
+
+.submenu a:hover {
+    background: var(--bg-hover);
+    color: var(--accent);
+}
+
+/* HERO */
+.hero {
+    height: 320px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: url("images/home.jpg") center/cover no-repeat;
+}
+
+.hero-content {
+    text-align: center;
+    background: rgba(90, 62, 43, 0.7);
+    padding: 30px 40px;
+    border-radius: 16px;
+}
+
+.hero h1,
+.hero p {
+    color: var(--text);
+    margin: 0;
+    transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+.hero p {
+    margin-top: 12px;
+    font-size: 1.1rem;
+}
+
+/* ANIMACIONES */
+.hide-up {
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+.hide-left {
+    opacity: 0;
+    transform: translateX(-40px);
+}
+
+.hide-right {
+    opacity: 0;
+    transform: translateX(40px);
+}
+</style>
+</head>
+
+<body>
+
+<nav>
+    <div class="menu-item"
+         data-image="images/home.jpg"
+         data-title="Bienvenido a Ride4anOscar.com"
+         data-subtitle="Diseño, 3D, videojuegos y desarrollo web"
+         data-direction="up">
+        🏠 Oscar
+    </div>
+
+    <div class="menu-item"
+         data-image="images/diseños.jpg"
+         data-title="Diseños 3D"
+         data-subtitle="Modelado, render y assets profesionales"
+         data-direction="left">
+        🛠️ Diseños 3D
+        <div class="submenu">
+            <a href="#">Diseño</a>
+            <a href="#">Blender</a>
+            <a href="/unity.html">Galería De Proyectos</a>
+        </div>
+    </div>
+
+    <div class="menu-item"
+         data-image="images/personajes.png"
+         data-title="Personajes"
+         data-subtitle="Creación de personajes para juegos y cine"
+         data-direction="right">
+        📦 Personajes
+        <div class="submenu">
+            <a href="#">Skater XL</a>
+            <a href="#">I-Clone</a>
+        </div>
+    </div>
+
+    <div class="menu-item"
+         data-image="images/webs.jpg"
+         data-title="Páginas Web"
+         data-subtitle="Webs modernas, rápidas y responsivas"
+         data-direction="up">
+        📝 Webs
+    </div>
+
+    <div class="menu-item"
+         data-image="images/juegos.jpg"
+         data-title="Juegos"
+         data-subtitle="Experiencias interactivas y VR"
+         data-direction="left">
+        🎧 Juegos
+    </div>
+
+    <div class="menu-item"
+         data-image="images/contacto.jpg"
+         data-title="Contacto"
+         data-subtitle="Hablemos de tu próximo proyecto"
+         data-direction="right">
+        📞 Contacto
+    </div>
+</nav>
+
+<section class="hero">
+    <div class="hero-content">
+        <h1 id="hero-title">Follow Me</h1>
+        <p id="hero-subtitle">Explora mis proyectos y trabajos</p>
+    </div>
+</section>
+
+<script>
+const items = document.querySelectorAll('.menu-item');
+const hero = document.querySelector('.hero');
+const title = document.getElementById('hero-title');
+const subtitle = document.getElementById('hero-subtitle');
+
+function updateHero(item, save = true) {
+    const { image, title: t, subtitle: s, direction } = item.dataset;
+    const hideClass = `hide-${direction || 'up'}`;
+
+    hero.style.background = `url("${image}") center/cover no-repeat`;
+
+    title.className = hideClass;
+    subtitle.className = hideClass;
+
+    setTimeout(() => {
+        title.textContent = t;
+        subtitle.textContent = s;
+        title.className = '';
+        subtitle.className = '';
+    }, 300);
+
+    if (save) localStorage.setItem('activeMenu', t);
+}
+
+items.forEach(item => {
+    item.addEventListener('click', e => {
+        e.stopPropagation();
+        items.forEach(i => i.classList.remove('active'));
+        item.classList.add('active');
+        updateHero(item);
+    });
+
+    item.addEventListener('mouseenter', () => {
+        updateHero(item, false);
+    });
+});
+
+document.addEventListener('click', () => {
+    items.forEach(i => i.classList.remove('active'));
+});
+
+window.addEventListener('load', () => {
+    const saved = localStorage.getItem('activeMenu');
+    if (!saved) return;
+    const item = [...items].find(i => i.dataset.title === saved);
+    if (item) updateHero(item, false);
+});
+</script><h2><p>Hola, mi nombre es Oscar Laguna.
+Soy una persona apasionada por el diseño, el arte y modelado 3D, los videojuegos y el desarrollo web.
+
+Disfruto creando experiencias visuales atractivas y funcionales, dando forma a ideas a través del 3D y combinando creatividad con tecnología. Los videojuegos son una gran fuente de inspiración para mí, tanto a nivel artístico como técnico, y el desarrollo web me permite transformar conceptos en proyectos interactivos y reales.
+
+Además, estoy abierto a realizar trabajos por encargo y a ofrecer mis servicios profesionales, adaptándome a las necesidades de cada proyecto, ya sea creativo, técnico o una combinación de ambos. Me motiva colaborar, afrontar nuevos retos y seguir creciendo en el ámbito digital.</p>
+</body></h2>
+
+</html>
